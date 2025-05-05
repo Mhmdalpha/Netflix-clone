@@ -2,6 +2,9 @@
 
 ![Demo App](/frontend/public/screenshot-for-readme.png)
 
+## API Documentation
+
+You can view the full API documentation using Swagger [here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/USERNAME/REPO/main/backend/swagger/netflix-api.yaml).
 
 
 About This Project:
