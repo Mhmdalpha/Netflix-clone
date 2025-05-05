@@ -1,0 +1,275 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.0/schema/2021-09-28
+openapi: 3.0.30
+info:
+  title: Netflix Clone API
+  version: 1.0.1
+  description: |
+    This is the backend REST API for the Netflix Clone application, built with the MERN Stack (MongoDB, Express.js, React.js, and Node.js).
+    
+    The API allows users to:
+      - Register and log in using JWT-based authentication
+      - Browse a list of available movies or series
+      - Add, update, and delete movies (admin-only features)
+      - Securely interact with protected endpoints using Bearer tokens
+
+    Features:
+      - User authentication with email and password
+      - Token-based authorization using JSON Web Tokens (JWT)
+      - Movie CRUD operations with support for genres, age limits, and series classification
+      - Follows RESTful API best practices and uses clear schema validation
+
+    Target Users:
+      - Frontend developers integrating with this API for UI components
+      - Admins managing media content
+      - Students or developers learning full-stack development with MERN
+
+    Base URL for requests:
+      - http://localhost:5000/api
+
+    For full source code, visit the GitHub repository:
+      - https://github.com/Mhmdalpha/Netflix-clone
+
+    Developed by Mhmdalpha.
+
+
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/27.SeptianNaufalp/Netflix-API-Documentation/1.0.1
+  - url: http://localhost:5000/api
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Authentication and user registration
+  - name: Movies
+    description: Movie management
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60c72b2f4f1a256b8c8e6c9f
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          example: johndoe@example.com
+
+    UserInput:
+      type: object
+      required: [username, email, password]
+      properties:
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          example: johndoe@example.com
+        password:
+          type: string
+          example: mySecurePassword123
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          example: johndoe@example.com
+        password:
+          type: string
+          example: mySecurePassword123
+
+    MovieInput:
+      type: object
+      required: [title, description, genre, year, limit, isSeries]
+      properties:
+        title:
+          type: string
+          example: Stranger Things
+        description:
+          type: string
+          example: A thrilling Netflix original series.
+        genre:
+          type: string
+          example: Sci-Fi
+        year:
+          type: integer
+          example: 2021
+        limit:
+          type: integer
+          example: 16
+        isSeries:
+          type: boolean
+          example: true
+
+    Movie:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        genre:
+          type: string
+        year:
+          type: integer
+        limit:
+          type: integer
+        isSeries:
+          type: boolean
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input or email already exists
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Log in as a registered user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        '200':
+          description: Successful login with JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid email or password
+
+  /movies:
+    get:
+      tags: [Movies]
+      summary: Retrieve the list of movies
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+    post:
+      tags: [Movies]
+      summary: Add a new movie
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieInput'
+      responses:
+        '201':
+          description: Movie added successfully
+        '400':
+          description: Invalid movie data
+
+  /movies/{id}:
+    get:
+      tags: [Movies]
+      summary: Get a movie by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movie details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          description: Movie not found
+
+    put:
+      tags: [Movies]
+      summary: Update a movie by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieInput'
+      responses:
+        '200':
+          description: Movie updated successfully
+        '404':
+          description: Movie not found
+
+    delete:
+      tags: [Movies]
+      summary: Delete a movie by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movie deleted successfully
+        '404':
+          description: Movie not found
