@@ -4,7 +4,7 @@
 
 ## API Documentation
 
-You can view the full API documentation using Swagger [here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/USERNAME/REPO/main/backend/swagger/netflix-api.yaml).
+You can view the full API documentation using Swagger [here](https://app.swaggerhub.com/apis-docs/27.SeptianNaufalp/Netflix-API-Documentation/1.0.1).
 
 
 About This Project:
